@@ -81,6 +81,8 @@ Charlie (C) gets 1 vote
 Voter V3 strategically changed their vote to manipulate the election outcome. This is an example of strategic voting risk because the voting system allowed a voter to gain an advantage by misrepresenting their true preference.
 ```
 
+![example calculation](image-2.png)
+
 ## Happiness Level
 
 Hi=m−rank of winning alternative in voter’s preference list
@@ -91,6 +93,15 @@ m = total number of alternatives (candidates)
 Rank of winning alternative = the position of the winning alternative in the voter's true preference list (1st place = best, mth place = worst).
 
 ![happiness calculation](image.png)
+
+We can also make a quadratic happiness model.
+
+Hi=(m−rank of winning alternative)^2
+
+This gives more weight to higher-ranked outcomes, making happiness drop faster as the winner moves further down a voter's preference list.
+It emphasizes that a voter is much happier with their top choice than with a second or third option.
+
+![quadratic-happiness](image-1.png)
 
 ## Overall Happiness Level
 
