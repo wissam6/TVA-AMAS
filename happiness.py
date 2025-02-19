@@ -51,21 +51,23 @@ def exp_decay_borda_style_happiness(voter_preference, election_ranking, polariza
     num_alternatives = len(voter_preference)
     for rank, alternative in enumerate(voter_preference):
 
-        # top preferences - voter's favorites
-        if (rank + 1) <= math.floor((win_fraction * num_alternatives)):
-            loss_of_rank = min((rank - np.where(election_ranking == alternative)[0][0]), 0)
-            raw_happiness += math.exp(loss_of_rank - rank) # equivalent to [exp(loss_of_rank) * exp(-rank)]
-            max_possible_happiness += math.exp(-rank)
-
-        # least prefered - voter's dislikes
-        elif (rank + 1) > math.ceil(((1 - lose_fraction) * num_alternatives)):
-            gain_of_rank = min((np.where(election_ranking == alternative)[0][0]) - rank, 0)
-            raw_happiness += (1/win_lose_importance) * math.exp(gain_of_rank + rank - (num_alternatives - 1))
-            max_possible_happiness += (1/win_lose_importance) * math.exp(rank - (num_alternatives - 1))
-
-        else:
+        if not np.isin(alternative, election_ranking):
             continue
+        else:
+            # top preferences - voter's favorites
+            if (rank + 1) <= math.floor((win_fraction * num_alternatives)):
+                loss_of_rank = min((rank - np.where(election_ranking == alternative)[0][0]), 0)
+                raw_happiness += math.exp(loss_of_rank - rank) # equivalent to [exp(loss_of_rank) * exp(-rank)]
+                max_possible_happiness += math.exp(-rank)
 
+            # least prefered - voter's dislikes
+            elif (rank + 1) > math.ceil(((1 - lose_fraction) * num_alternatives)):
+                gain_of_rank = min((np.where(election_ranking == alternative)[0][0]) - rank, 0)
+                raw_happiness += (1/win_lose_importance) * math.exp(gain_of_rank + rank - (num_alternatives - 1))
+                max_possible_happiness += (1/win_lose_importance) * math.exp(rank - (num_alternatives - 1))
+
+            else:
+                continue
         happiness = raw_happiness / max_possible_happiness
 
     return np.around(happiness, decimals=2)
