@@ -61,7 +61,6 @@ class BTVA:
         return happinesses
 
     def run_strategic_voting(self, election_result):
-        
         election_ranking, votes = election_result 
 
         if self.voting_scheme == 'plurality':
