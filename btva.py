@@ -1,6 +1,7 @@
 import numpy as np
 import random
 from happiness import *
+from risk import *
 import math
 import json
 
@@ -331,3 +332,4 @@ for voter in range(btva.num_voters):
 
 print('VOTER STRATEGIC HAPPINESS GAINS:')
 print(np.array2string(voter_strategic_gains * 100, formatter={'float_kind': lambda x: f"{x:.0f}%"}))
+print(f'Risk of Strategic Voting: {average_gain_risk(voter_strategic_gains):.2f}')
