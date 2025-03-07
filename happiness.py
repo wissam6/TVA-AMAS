@@ -36,7 +36,7 @@ def exponential_decay_happiness(voter_preference, election_ranking):
     
 
 ## exponentially decaying happiness function considering the whole preference list (suitable for Borda for example)
-def exp_decay_borda_style_happiness(voter_preference, election_ranking, polarization={'win_fr': 1, 'lose_fr': 0, 'wl_importance': 2}):
+def exp_decay_borda_style_happiness(voter_preference, election_ranking, polarization={'win_fr': 0.3, 'lose_fr': 0.2, 'wl_importance': 1.5}):
     # about polarizion: 
     # win_fr shows the fraction that voter wants to win, 
     # lose_fr shows the fraction the voter wants to lose,
@@ -68,7 +68,7 @@ def exp_decay_borda_style_happiness(voter_preference, election_ranking, polariza
 
             else:
                 continue
-        happiness = raw_happiness / max_possible_happiness
+        happiness = raw_happiness/max_possible_happiness
 
     return np.around(happiness, decimals=2)
 
