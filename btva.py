@@ -3,7 +3,7 @@ import random
 from happiness import *
 from risk import *
 import math
-import json
+from functools import partial
 
 class BTVA:
     def __init__(self, voting_scheme, preference_matrix):
@@ -290,12 +290,12 @@ pref_matrix = np.array([
 random_matrix = generate_random_preferences_matrix(num_alternatives=5, num_voters=8)
 
 # Example Usage
-btva = BTVA('borda', random_matrix)
+btva = BTVA('anti_plurality', random_matrix)
 
 ## Non-strategic election
 election_result = btva.run_non_strategic_election()
 election_ranking, votes = election_result
-happinesses = btva.calc_happinesses(random_matrix, election_ranking, exp_decay_borda_style_happiness)
+happinesses = btva.calc_happinesses(random_matrix, election_ranking, partial(binary_happiness, anti_plurality=True))
 btva.non_strategic_happinesses = happinesses
 print()
 print(random_matrix)
@@ -308,28 +308,29 @@ print("Voters' Happiness ", np.array2string(happinesses, formatter={'float_kind'
 print()
 
 ## Strategic election
-best_strategic_scenarios = btva.run_strategic_voting(election_result)
-# PRINTING BEST STRATEGIC SCENARIOS    
-for voter in range(btva.num_voters):
-    if best_strategic_scenarios[voter]:
-        print(f'VOTER {voter} {best_strategic_scenarios[voter]['strategy'].upper()}ING >>>')
-        print(f'{btva.preference_matrix[:, voter]} -> {best_strategic_scenarios[voter]['strategic preference matrix'][:, voter]}')
-        for key, value in best_strategic_scenarios[voter].items():
-            if key == 'strategic preference matrix':
-                print(key, value, sep='\n')
-            elif key == 'strategy':
-                pass
-            else:
-                print(f'{key}: {value}')
-        print()
+# best_strategic_scenarios = btva.run_strategic_voting(election_result)
 
-voter_strategic_gains = np.zeros(btva.num_voters)
-for voter in range(btva.num_voters):
-    if not best_strategic_scenarios[voter]:
-        pass
-    else:
-        voter_strategic_gains[voter] = (best_strategic_scenarios[voter]['voter strategic happiness'] - best_strategic_scenarios[voter]['voter original happiness']) / best_strategic_scenarios[voter]['voter strategic happiness']
+## BEST STRATEGIC SCENARIOS (ONLY IN BORDA)
+# for voter in range(btva.num_voters):
+#     if best_strategic_scenarios[voter]:
+#         print(f'VOTER {voter} {best_strategic_scenarios[voter]['strategy'].upper()}ING >>>')
+#         print(f'{btva.preference_matrix[:, voter]} -> {best_strategic_scenarios[voter]['strategic preference matrix'][:, voter]}')
+#         for key, value in best_strategic_scenarios[voter].items():
+#             if key == 'strategic preference matrix':
+#                 print(key, value, sep='\n')
+#             elif key == 'strategy':
+#                 pass
+#             else:
+#                 print(f'{key}: {value}')
+#         print()
 
-print('VOTER STRATEGIC HAPPINESS GAINS:')
-print(np.array2string(voter_strategic_gains * 100, formatter={'float_kind': lambda x: f"{x:.0f}%"}))
-print(f'Risk of Strategic Voting: {average_gain_risk(voter_strategic_gains):.2f}')
+# voter_strategic_gains = np.zeros(btva.num_voters)
+# for voter in range(btva.num_voters):
+#     if not best_strategic_scenarios[voter]:
+#         pass
+#     else:
+#         voter_strategic_gains[voter] = (best_strategic_scenarios[voter]['voter strategic happiness'] - best_strategic_scenarios[voter]['voter original happiness']) / best_strategic_scenarios[voter]['voter strategic happiness']
+
+# print('VOTER STRATEGIC HAPPINESS GAINS:')
+# print(np.array2string(voter_strategic_gains * 100, formatter={'float_kind': lambda x: f"{x:.0f}%"}))
+# print(f'Risk of Strategic Voting: {average_gain_risk(voter_strategic_gains):.2f}')

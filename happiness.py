@@ -26,12 +26,19 @@ def k_binary_happiness(k, voter_preference, election_ranking):
 
 
 ## exponentially decaying happiness function, but only caring about the winner
-def exponential_decay_happiness(voter_preference, election_ranking):
+def exponential_decay_happiness(voter_preference, election_ranking, anti_plurality=False):
     voter_preference = np.asarray(voter_preference)
     election_ranking = np.asarray(election_ranking)
-    winner = election_ranking[0]
-    winner_place_in_voter_preference = np.where(voter_preference == winner)[0][0]
-    happiness = math.exp(-1 * winner_place_in_voter_preference)
+
+    if anti_plurality == False:
+        winner = election_ranking[0]
+        winner_place_in_voter_preference = np.where(voter_preference == winner)[0][0]
+        happiness = math.exp(-1 * winner_place_in_voter_preference)
+    else:
+        disliked_alternative = voter_preference[-1]
+        disliked_alternative_place_in_election_ranking = np.where(election_ranking == disliked_alternative)[0][0]
+        happiness = math.exp(-1 * ((len(voter_preference) - 1) - disliked_alternative_place_in_election_ranking))
+
     return np.around(happiness, decimals=2)
     
 
