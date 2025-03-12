@@ -52,7 +52,7 @@ class BTVA_Collusion(BTVA):
                     # Build a new ballot:
                     # 1. The collusive candidate at the top
                     # 2. Then all other candidates (preserving their order) except the collusive candidate and original winner
-                    # 3. Finally, the original winner at the bottom
+                    # 3. Finally, the original winner at the bottomf
                     new_ballot = [collusive_candidate] + [c for c in voter_pref if c not in [collusive_candidate, original_winner]] + [original_winner]
                     # Update the modified preference matrix with the new ballot for this voter
                     new_pref_matrix[:, voter] = new_ballot
