@@ -1,5 +1,5 @@
 import numpy as np
-from tvas.btva import BTVA
+from btva import BTVA
 import itertools
 
 class BVotingForTwo(BTVA):

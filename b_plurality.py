@@ -1,32 +1,24 @@
 import numpy as np
-from tvas.btva import BTVA
+from btva import BTVA
 
-class BAntiPlurality(BTVA):
-
+class BPlurality(BTVA):
     def run_non_strategic_election(self):
-        scores = np.full(self.num_alternatives, self.num_voters)
+        scores = np.zeros(self.num_alternatives)
         for voter in range(self.num_voters):
-            last_choice = self.preference_matrix[-1, voter]
-            scores[last_choice] -= 1
+            top_choice = self.preference_matrix[0, voter]
+            scores[top_choice] += 1
         election_ranking = np.argsort(-scores, kind='stable')
         votes = np.sort(-scores, kind='stable').astype(int) * (-1)
         return np.vstack((election_ranking, votes))
     
-    
     def run_strategic_election(self, election_result):
-        # in anti-plurality the voter does not have any options to push the disliked candidate lower
-        # but can at least try to help a more favorable contender to win (like the case in plurality).
-        # we could have also treated anti-plurality like borda and considered minimal gains for voters
-        # from various compromises, burys, or bullet voting.
         election_ranking, votes = election_result
         winner = election_ranking[0]
-
-        votes_copy = np.copy(votes)
-        votes_copy[0] = -1  # Changing winner's vote to -1 to find next max vote
-        second_max_vote = np.max(votes_copy)
-
-        contenders_indices = np.where(votes_copy == second_max_vote)[0]
-        contenders = election_ranking[contenders_indices]
+        result_copy = np.copy(election_result)
+        result_copy[1, 0] = -1  # Changing winner's vote to -1 to find next max vote
+        second_max_vote = np.max(result_copy[1])
+        contenders_indices = np.where(result_copy[1] == second_max_vote)[0]
+        contenders = election_result[0, contenders_indices]
         
         strategic_scenarios = [None] * self.num_voters
         for voter in range(self.num_voters):
@@ -43,7 +35,7 @@ class BAntiPlurality(BTVA):
                     strategic_preference_matrix = np.copy(self.preference_matrix)
                     strategic_preference_matrix[:, voter] = strategic_preference
                     # Run a new non-strategic election with the modified preferences
-                    btva_strategic = BAntiPlurality(strategic_preference_matrix, self.happiness_function)
+                    btva_strategic = BPlurality(strategic_preference_matrix, self.happiness_function)
                     new_election_ranking, new_votes = btva_strategic.run_non_strategic_election()
                     new_winner = new_election_ranking[0]
                     new_happinesses = self.calc_happinesses(new_election_ranking)

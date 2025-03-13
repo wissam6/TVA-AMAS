@@ -1,9 +1,9 @@
 import numpy as np
-from tvas.btva import BTVA
-from voting_schemes.b_plurality import BPlurality
-from voting_schemes.b_anti_plurality import BAntiPlurality
-from voting_schemes.b_voting_for_two import BVotingForTwo
-from voting_schemes.b_borda import BBorda
+from btva import BTVA
+from b_plurality import BPlurality
+from b_anti_plurality import BAntiPlurality
+from b_voting_for_two import BVotingForTwo
+from b_borda import BBorda
 from happiness import *
 from risk import *
 from functools import partial
@@ -49,7 +49,7 @@ btva_instance.non_strategic_happinesses = happinesses
 print("Preference Matrix:")
 print(random_matrix)
 print()
-print(f"NON-STRATEGIC {voting_scheme.upper().replace("_", "-")} ELECTION >>>")
+print(f"NON-STRATEGIC {voting_scheme.upper().replace('_', '-')} ELECTION >>>")
 print("Winner:", election_ranking[0])
 print("Election Ranking:", election_ranking)
 print("Election Scores:", votes)
@@ -63,4 +63,4 @@ voter_strategic_gains = btva_instance.calc_strategic_gains(strategic_scenarios)
 btva_instance.pretty_print_scenarios(strategic_scenarios)
 print('VOTER STRATEGIC HAPPINESS GAINS:')
 print(np.array2string(voter_strategic_gains * 100, formatter={'float_kind': lambda x: f"{x:.0f}%"}))
-print(f'Risk of Strategic Voting: {average_gain_risk(voter_strategic_gains):.2f}')
+print(f'Risk of Strategic Voting: {gain_percentile_risk(voter_strategic_gains, percentile=75, only_consider_gainers=True):.2f}')

@@ -1,5 +1,5 @@
 import numpy as np
-from tvas.btva import BTVA
+from btva import BTVA
 
 class BBorda(BTVA):
     def run_non_strategic_election(self):
@@ -59,7 +59,7 @@ class BBorda(BTVA):
                     # # PRINTING BULLET SCENARIOS
                     # if best_bullet_scenarios[voter]:
                     #     print(f'VOTER {voter} STRATEGIC VOTING >>>')
-                    #     print(f'{voter_preference} -> {best_bullet_scenarios[voter]['strategic preference matrix'][:, voter]}')
+                    #     print(f"{voter_preference} -> {best_bullet_scenarios[voter]['strategic preference matrix'][:, voter]}")
                     #     for key, value in best_bullet_scenarios[voter].items():
                     #         if key == 'strategic preference matrix':
                     #             print(key, value, sep='\n')
@@ -109,7 +109,7 @@ class BBorda(BTVA):
                     # # PRINTING COMPOROMISE SCENARIOS
                     # if best_compromise_scenarios[voter]:
                     #     print(f'VOTER {voter} STRATEGIC VOTING >>>')
-                    #     print(f'{voter_preference} -> {best_compromise_scenarios[voter]['strategic preference matrix'][:, voter]}')
+                    #     print(f"{voter_preference} -> {best_compromise_scenarios[voter]['strategic preference matrix'][:, voter]}")
                     #     for key, value in best_compromise_scenarios[voter].items():
                     #         if key == 'strategic preference matrix':
                     #             print(key, value, sep='\n')
@@ -158,7 +158,7 @@ class BBorda(BTVA):
                     # # PRINTING BURY SCENARIOS    
                     # if best_bury_scenarios[voter]:
                     #     print(f'VOTER {voter} STRATEGIC VOTING >>>')
-                    #     print(f'{voter_preference} -> {best_bury_scenarios[voter]['strategic preference matrix'][:, voter]}')
+                    #     print(f"{voter_preference} -> {best_bury_scenarios[voter]['strategic preference matrix'][:, voter]}")
                     #     for key, value in best_bury_scenarios[voter].items():
                     #         if key == 'strategic preference matrix':
                     #             print(key, value, sep='\n')
