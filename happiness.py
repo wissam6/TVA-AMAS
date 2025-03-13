@@ -48,7 +48,9 @@ def exp_decay_borda_style_happiness(voter_preference, election_ranking, polariza
     # win_fr shows the fraction that voter wants to win, 
     # lose_fr shows the fraction the voter wants to lose,
     # wl_importance how important it is for favorites to win compared to dislikes to lose.
-    
+    voter_preference = np.asarray(voter_preference)
+    election_ranking = np.asarray(election_ranking)
+
     win_fraction = polarization['win_fr']
     lose_fraction = polarization['lose_fr']
     win_lose_importance = polarization['wl_importance']
@@ -79,3 +81,28 @@ def exp_decay_borda_style_happiness(voter_preference, election_ranking, polariza
 
     return np.around(happiness, decimals=2)
 
+
+## when we assume voter preference means he strictly prefers i'th preference to the i+1'th
+def distance_sensitive_happiness(voter_preference, election_ranking):
+    voter_preference = np.asarray(voter_preference)
+    election_ranking = np.asarray(election_ranking)
+    num_alternatives = len(voter_preference)
+
+    happiness = 0
+    max_happiness = 0
+    for alternative in voter_preference:
+        alt_rank_in_pref = np.where(voter_preference == alternative)[0][0]
+        alt_rank_in_election = np.where(election_ranking == alternative)[0][0]
+
+        deviation = abs(alt_rank_in_election - alt_rank_in_pref)
+        max_deviation = max(alt_rank_in_pref, num_alternatives - alt_rank_in_pref - 1)
+
+        rank_importance = ((num_alternatives - alt_rank_in_pref) / num_alternatives)
+
+        happiness += (1 - (deviation / max_deviation)) * rank_importance
+        max_happiness += 1 * rank_importance
+
+    happiness /= max_happiness
+    happiness = (abs(happiness - 0.25)) / 0.75 # since with different num_alternatives the min happiness seems to be around 0.25
+
+    return np.around(happiness, decimals=2)

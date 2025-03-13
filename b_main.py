@@ -21,12 +21,8 @@ btva_classes_dict = {
 num_alternatives = 5
 num_voters = 8
 btva_happiness_functions_dict = {
-    'plurality': exponential_decay_happiness,
-    'anti_plurality': partial(
-        exp_decay_borda_style_happiness,
-        # assuming the voter wants the first preference to win, and the last preference to lose 
-        polarization={'win_fr': 1/num_alternatives, 'lose_fr': 1/num_alternatives, 'wl_importance': 1}
-    ),
+    'plurality': distance_sensitive_happiness,
+    'anti_plurality': distance_sensitive_happiness,
     'voting_for_two': partial(
         exp_decay_borda_style_happiness,
         polarization={'win_fr': 2/num_alternatives, 'lose_fr': 0, 'wl_importance': 1}
