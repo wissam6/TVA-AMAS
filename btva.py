@@ -1,4 +1,5 @@
 import numpy as np
+from helper_functions import print_side_by_side
 
 class BTVA:
     def __init__(self, preference_matrix, happiness_function):
@@ -21,18 +22,31 @@ class BTVA:
             happinesses[voter] = self.happiness_function(preference_matrix[:, voter], election_ranking)
         return happinesses
 
-    def pretty_print_scenarios(self, strategic_scenarios):
+    def pretty_print_scenarios(self, strategic_scenarios, election_result):
+        election_ranking, votes = election_result
+        strategic_voters = [voter for voter, strategy in enumerate(strategic_scenarios) if strategy]
+        if len(strategic_voters) == 0:
+            print("There are no strategic voters in this election!")
+        else:
+            print(f"Strategic voters are -> {', '.join(str(v) for v in strategic_voters)}")
+        print()
         for voter in range(self.num_voters):
             if strategic_scenarios[voter]:
-                print(f"VOTER {voter} {strategic_scenarios[voter]['strategy'].upper()}ING >>>")
-                print(f"{self.preference_matrix[:, voter]} -> {strategic_scenarios[voter]['strategic preference matrix'][:, voter]}")
-                for key, value in strategic_scenarios[voter].items():
-                    if key == 'strategic preference matrix':
-                        print(key, value, sep='\n')
-                    elif key == 'strategy':
-                        pass
-                    else:
-                        print(f'{key}: {value}')
+                strategic_preference_matrix = strategic_scenarios[voter]['strategic preference matrix']
+                new_election_ranking = strategic_scenarios[voter]['new election ranking']
+                new_votes = strategic_scenarios[voter]['new votes']
+                new_happinesses = strategic_scenarios[voter]['new happinesses']
+
+                print(f":: VOTER {voter} {strategic_scenarios[voter]['strategy'].upper()}ING..")
+                print_side_by_side(self.preference_matrix, strategic_preference_matrix)
+
+                print(f"Winner: {election_ranking[0]} -> {new_election_ranking[0]}")
+                print(f"Election Ranking: {election_ranking} -> {new_election_ranking}")
+                print(f"Election Scores: {votes} -> {new_votes}")
+                print(f"Original Happiness:  {self.non_strategic_happinesses}")
+                print(f"Strategic Happiness: {new_happinesses}")
+                change_in_happiness = np.round((new_happinesses - self.non_strategic_happinesses) * 100/ np.maximum(new_happinesses, self.non_strategic_happinesses)).astype(int)
+                print(f"Change In Happiness: {change_in_happiness} %")
                 print()
         return
 

@@ -6,10 +6,8 @@ from b_voting_for_two import BVotingForTwo
 from b_borda import BBorda
 from happiness import *
 from risk import *
+from helper_functions import *
 from functools import partial
-
-def generate_random_preferences_matrix(num_alternatives, num_voters):
-    return np.array([np.random.permutation(num_alternatives) for _ in range(num_voters)]).T
 
 btva_classes_dict = {
     'plurality': BPlurality,
@@ -27,7 +25,7 @@ btva_happiness_functions_dict = {
         exp_decay_borda_style_happiness,
         polarization={'win_fr': 2/num_alternatives, 'lose_fr': 0, 'wl_importance': 1}
     ),
-    'borda': exp_decay_borda_style_happiness
+    'borda': distance_sensitive_happiness
 }
 
 
@@ -56,7 +54,7 @@ print()
 # Running a strategic election
 strategic_scenarios = btva_instance.run_strategic_election(election_result)
 voter_strategic_gains = btva_instance.calc_strategic_gains(strategic_scenarios)
-btva_instance.pretty_print_scenarios(strategic_scenarios)
+btva_instance.pretty_print_scenarios(strategic_scenarios, election_result)
 print('VOTER STRATEGIC HAPPINESS GAINS:')
 print(np.array2string(voter_strategic_gains * 100, formatter={'float_kind': lambda x: f"{x:.0f}%"}))
 print(f'Risk of Strategic Voting: {gain_percentile_risk(voter_strategic_gains, percentile=75, only_consider_gainers=True):.2f}')
