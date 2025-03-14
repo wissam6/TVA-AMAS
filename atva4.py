@@ -197,6 +197,7 @@ class ATVA4(BTVA):
             print()
             
             print(f'Overall Risk of Strategic Voting: {np.max(change_in_happiness[strategic_voters])} %')
+        return
 
 
 random_matrix = generate_random_preferences_matrix(5, 8)
