@@ -51,11 +51,13 @@ class ATVA4(BTVA):
         print("Preference Matrix:")
         print(self.preference_matrix)
         print()
-        print(f"NON-STRATEGIC {self.voting_scheme.upper().replace('_', '-')} ELECTION >>>")
-        print("Winner:", election_ranking[0])
-        print("Election Ranking:", election_ranking)
-        print("Election Scores:", votes)
-        print("Voters' Happiness:", happinesses)
+        print(f"::: NON-STRATEGIC {self.voting_scheme.upper().replace('_', '-')} ELECTION :::")
+        print("Non-strategic Voting Outcome (O):")
+        print(f"Winner -> {election_ranking[0]}")
+        print(f"Ranking -> {election_ranking}")
+        print(f"Votes -> {votes}")
+        print("Voters' Happiness Levels (Hi):", happinesses)
+        print(f"Overall Voter Happiness Level (H): {np.around(sum(happinesses), 2)} (Out of max possible {btva_instance.num_voters})")
         print()
 
         # Running a strategic btva election
@@ -68,7 +70,10 @@ class ATVA4(BTVA):
         elif len(strategic_voters) == 1:
             print(f"The only strategic voter is {strategic_voters[0]}; No concurrent voting possible.")
         else:
-            print(f"Strategic voters are -> {', '.join(str(v) for v in strategic_voters)}")
+            print("=" * 37)
+            print(f"POTENTIAL CONCURRENT STRATEGIC VOTING")
+            print("=" * 37)
+            print(f"Potential strategic voters are -> {', '.join(str(v) for v in strategic_voters)}")
             
         print()
 
@@ -76,9 +81,10 @@ class ATVA4(BTVA):
         num_combos = 0
         for n in range(2, len(strategic_voters) + 1):
             num_combos += 1
-            print("=" * 40)
+            print("-" * 40)
             print(f"{n} voters simultaneous strategical voting")
-            print("=" * 40)
+            print("-" * 40)
+            print()
             for combo in itertools.combinations(strategic_voters, n):
                 print(f":: voters {', '.join(str(v) for v in combo)} simultaneously voting strategically..")
                 strategic_preference_matrix = np.copy(self.preference_matrix)
@@ -117,9 +123,10 @@ class ATVA4(BTVA):
                 potential_change_in_happinesses[voter]['not_participated'] /= num_combos
             
         # Printing potential gains/losses in case of participating or not participating
-        print(f"{'Voter':<10}{'Participated':<20}{'Not Participated':<20}")
-        for voter, vals in potential_change_in_happinesses.items():
-            print(f"{voter:<10}{vals['participated']:<20.2f}{vals['not_participated']:<20.2f}")
+        if len(strategic_voters) > 1:
+            print(f"{'Voter':<10}{'Participated':<20}{'Not Participated':<20}")
+            for voter, vals in potential_change_in_happinesses.items():
+                print(f"{voter:<10}{vals['participated']:<20.2f}{vals['not_participated']:<20.2f}")
 
         return potential_change_in_happinesses, strategic_scenarios
 
@@ -138,9 +145,9 @@ class ATVA4(BTVA):
                 strategic_voters.append(voter)
         
         print()
-        print("=" * 27)
-        print(f"CONCURRENT STRATEGIC VOTING")
-        print("=" * 27)
+        print("=" * 34)
+        print(f"ACTUAL CONCURRENT STRATEGIC VOTING")
+        print("=" * 34)
 
         if len(strategic_voters) == 0:
             print("There are no strategic voters remaining in this election!")
@@ -174,14 +181,23 @@ class ATVA4(BTVA):
             new_happinesses = new_btva_instance.calc_happinesses(new_election_ranking, self.preference_matrix)
             new_btva_instance.non_strategic_happinesses = new_happinesses
 
+            print("Change in Voting Outcome (O):")
             print(f"Winner: {election_ranking[0]} -> {new_election_ranking[0]}")
-            print(f"Election Ranking: {election_ranking} -> {new_election_ranking}")
-            print(f"Election Scores: {votes} -> {new_votes}")
-            print(f"Original Happiness:  {happinesses}")
-            print(f"Strategic Happiness: {new_happinesses}")
+            print(f"Ranking: {election_ranking} -> {new_election_ranking}")
+            print(f"Votes: {votes} -> {new_votes}")
+            print(f"Original Happiness (Hi):  {happinesses}")
+            print(f"Strategic Happiness (H~i): {new_happinesses}")
             change_in_happiness = np.round((new_happinesses - happinesses) * 100/ np.maximum(new_happinesses, happinesses)).astype(int)
+            change_in_overall_happiness = np.round((sum(new_happinesses) - sum(happinesses)) * 100/ np.maximum(sum(new_happinesses), sum(happinesses))).astype(int)
+            print(f"Overall Voter Happiness Level (H): {np.around(sum(happinesses), 2)} (Out of max possible {self.num_voters})")
+            print(f"Strategic Voter Happiness Level (H~): {np.around(sum(new_happinesses), 2)} (Out of max possible {self.num_voters})")
+            print(f"Change In Individual Happiness: {change_in_happiness} %")
+            print(f"Change In Overall Happiness: {change_in_overall_happiness} %")
             print(f"Change In Happiness: {change_in_happiness} %")
             print()
+            
+            print(f'Overall Risk of Strategic Voting: {np.max(change_in_happiness[strategic_voters])} %')
+
 
 random_matrix = generate_random_preferences_matrix(5, 8)
 

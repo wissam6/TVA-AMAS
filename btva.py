@@ -28,7 +28,12 @@ class BTVA:
         if len(strategic_voters) == 0:
             print("There are no strategic voters in this election!")
         else:
+            print("Non-strategic voters -> " + ", ".join(str(v) for v in range(self.num_voters) if v not in strategic_voters))
             print(f"Strategic voters are -> {', '.join(str(v) for v in strategic_voters)}")
+            print()
+            print("=" * 24)
+            print("Best strategic scenarios")
+            print("=" * 24)
         print()
         for voter in range(self.num_voters):
             if strategic_scenarios[voter]:
@@ -37,17 +42,24 @@ class BTVA:
                 new_votes = strategic_scenarios[voter]['new votes']
                 new_happinesses = strategic_scenarios[voter]['new happinesses']
 
-                print(f":: VOTER {voter} {strategic_scenarios[voter]['strategy'].upper()}ING..")
+                print()
+                print(f"..VOTER {voter} {strategic_scenarios[voter]['strategy'].upper()}ING..")
+                print(f"{self.preference_matrix[:, voter]} -> {strategic_preference_matrix[:, voter]}")
                 print_side_by_side(self.preference_matrix, strategic_preference_matrix)
 
+                print("Change in Voting Outcome (O):")
                 print(f"Winner: {election_ranking[0]} -> {new_election_ranking[0]}")
-                print(f"Election Ranking: {election_ranking} -> {new_election_ranking}")
-                print(f"Election Scores: {votes} -> {new_votes}")
-                print(f"Original Happiness:  {self.non_strategic_happinesses}")
-                print(f"Strategic Happiness: {new_happinesses}")
+                print(f"Ranking: {election_ranking} -> {new_election_ranking}")
+                print(f"Votes: {votes} -> {new_votes}")
+                print(f"Original Happiness (Hi):  {self.non_strategic_happinesses}")
+                print(f"Strategic Happiness (H~i): {new_happinesses}")
                 change_in_happiness = np.round((new_happinesses - self.non_strategic_happinesses) * 100/ np.maximum(new_happinesses, self.non_strategic_happinesses)).astype(int)
-                print(f"Change In Happiness: {change_in_happiness} %")
-                print()
+                change_in_overall_happiness = np.round((sum(new_happinesses) - sum(self.non_strategic_happinesses)) * 100/ np.maximum(sum(new_happinesses), sum(self.non_strategic_happinesses))).astype(int)
+                print(f"Overall Voter Happiness Level (H): {np.around(sum(self.non_strategic_happinesses), 2)} (Out of max possible {self.num_voters})")
+                print(f"Strategic Voter Happiness Level (H~): {np.around(sum(new_happinesses), 2)} (Out of max possible {self.num_voters})")
+                print(f"Change In Individual Happiness: {change_in_happiness} %")
+                print(f"Change In Overall Happiness: {change_in_overall_happiness} %")
+
         return
 
     def calc_strategic_gains(self, strategic_scenarios):
