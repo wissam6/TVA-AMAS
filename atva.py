@@ -2,6 +2,7 @@ import numpy as np
 import itertools
 from happiness import *
 from btva import BTVA
+import matplotlib.pyplot as plt
 
 ###############################################################################
 # 1. Advanced Voting System: Addressing Voter Collusion (Multiple-Voter Manipulations)
@@ -232,7 +233,8 @@ def run_experiments(voting_scheme, num_voters, num_candidates, group_size, num_t
     collusion_success_count = 0
     total_collusion_incentives = np.zeros(num_voters)
     total_happinesses = np.zeros(num_voters)
-    
+    happiness_changes = []
+
     for _ in range(num_trials):
         preference_matrix = generate_random_preference_matrix(num_voters, num_candidates)
         btva_collusion = BTVA_Collusion(voting_scheme, preference_matrix)
@@ -248,12 +250,13 @@ def run_experiments(voting_scheme, num_voters, num_candidates, group_size, num_t
         
         total_collusion_incentives += collusion_incentives
         total_happinesses += happinesses
+        happiness_changes.append(happinesses)
     
     average_collusion_incentives = total_collusion_incentives / num_trials
     collusion_success_rate = collusion_success_count / num_trials
     average_happinesses = total_happinesses / num_trials
     
-    return collusion_success_rate, average_collusion_incentives, average_happinesses
+    return collusion_success_rate, average_collusion_incentives, average_happinesses, happiness_changes
 
 voting_schemes = ['plurality', 'borda']
 number_of_voters = 5
@@ -264,12 +267,22 @@ num_trials = 2
 # Run experiments
 for voting_scheme in voting_schemes:
     for group_size in group_sizes:
-        success_rate, avg_incentives, avg_happinesses = run_experiments(voting_scheme, number_of_voters, number_of_candidates, group_size, num_trials)
+        success_rate, avg_incentives, avg_happinesses, happiness_changes = run_experiments(voting_scheme, number_of_voters, number_of_candidates, group_size, num_trials)
         print(f"Voting Scheme: {voting_scheme}, Group Size: {group_size}")
         print(f"Collusion Success Rate: {success_rate:.2f}")
         print(f"Average Collusion Incentives: {avg_incentives}")
         print(f"Average Happinesses: {avg_happinesses}")
         print("")
+
+         # Plot happiness changes
+        plt.figure(figsize=(10, 6))
+        for trial in range(num_trials):
+            plt.plot(happiness_changes[trial], label=f'Trial {trial+1}')
+        plt.xlabel('Voter Index')
+        plt.ylabel('Happiness Level')
+        plt.title(f'Happiness Level Changes - Voting Scheme: {voting_scheme}, Group Size: {group_size}')
+        plt.legend()
+        plt.show()
 
 
 # print("=== Collusive Strategic Voting ===")
