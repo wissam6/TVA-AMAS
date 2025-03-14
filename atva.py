@@ -222,9 +222,61 @@ pref_matrix = np.array([
     [4, 2, 1, 4, 0, 2, 3, 0]
 ])
 
-print("=== Collusive Strategic Voting ===")
-btva_collusion = BTVA_Collusion('plurality', pref_matrix)
-collusive_incentives = btva_collusion.run_collusive_strategic_voting(group_size=4)
+def generate_random_preference_matrix(num_voters, num_candidates):
+    preference_matrix = np.zeros((num_candidates, num_voters), dtype=int)
+    for voter in range(num_voters):
+        preference_matrix[:, voter] = np.random.permutation(num_candidates)
+    return preference_matrix
+
+def run_experiments(voting_scheme, num_voters, num_candidates, group_size, num_trials):
+    collusion_success_count = 0
+    total_collusion_incentives = np.zeros(num_voters)
+    total_happinesses = np.zeros(num_voters)
+    
+    for _ in range(num_trials):
+        preference_matrix = generate_random_preference_matrix(num_voters, num_candidates)
+        btva_collusion = BTVA_Collusion(voting_scheme, preference_matrix)
+        collusion_incentives = btva_collusion.run_collusive_strategic_voting(group_size)
+        
+        if np.sum(collusion_incentives) > 0:
+            collusion_success_count += 1
+        
+        # Calculate happiness after collusion
+        election_result = btva_collusion.run_non_strategic_election()
+        election_ranking, _ = election_result
+        happinesses = btva_collusion.calc_happinesses(preference_matrix, election_ranking, exponential_decay_happiness)
+        
+        total_collusion_incentives += collusion_incentives
+        total_happinesses += happinesses
+    
+    average_collusion_incentives = total_collusion_incentives / num_trials
+    collusion_success_rate = collusion_success_count / num_trials
+    average_happinesses = total_happinesses / num_trials
+    
+    return collusion_success_rate, average_collusion_incentives, average_happinesses
+
+voting_schemes = ['plurality', 'borda']
+number_of_voters = 5
+number_of_candidates = 4
+group_sizes = [2,3,5]
+num_trials = 2
+
+# Run experiments
+for voting_scheme in voting_schemes:
+    for group_size in group_sizes:
+        success_rate, avg_incentives, avg_happinesses = run_experiments(voting_scheme, number_of_voters, number_of_candidates, group_size, num_trials)
+        print(f"Voting Scheme: {voting_scheme}, Group Size: {group_size}")
+        print(f"Collusion Success Rate: {success_rate:.2f}")
+        print(f"Average Collusion Incentives: {avg_incentives}")
+        print(f"Average Happinesses: {avg_happinesses}")
+        print("")
+
+
+# print("=== Collusive Strategic Voting ===")
+# btva_collusion = BTVA_Collusion('plurality', pref_matrix)
+# collusive_incentives = btva_collusion.run_collusive_strategic_voting(group_size=4)
+
+
 #print("Collusive Incentives:", collusive_incentives)
 
 # print("\n=== Counter-Strategic Voting ===")
